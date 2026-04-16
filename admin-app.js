@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "YourAPIKey",
+    apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
     authDomain: "integral-hybrid-493515-b6.firebaseapp.com",
     databaseURL: "https://integral-hybrid-493515-b6-default-rtdb.firebaseio.com",
     projectId: "integral-hybrid-493515-b6",
