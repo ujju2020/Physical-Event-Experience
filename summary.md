@@ -23,3 +23,7 @@ The Smart Venue Experience Hub is a completed, full-stack prototype engineered t
 
 ## Conclusion
 The prototype definitively demonstrates the viability of serverless, real-time web technologies in a live event context. Through the combination of Vanilla JavaScript Modules, premium CSS design conventions, and Google Cloud infrastructure, the overarching goal of transforming stadium chaos into organized coordination has been achieved.
+
+---
+*Copyright Information*  
+*Developer - Ujjwal Kumar Bhowmick (ujjwalkumarbhowmick30@gmail.com)*

@@ -47,4 +47,10 @@ To elevate this prototype to a full production system:
 - Integrate Firebase Authentication to secure the Admin Dashboard behind an admin-only login screen.
 
 ---
+---
 *Built to transform chaos into coordination.*
+
+---
+*Copyright Information*
+*Developer - Ujjwal Kumar Bhowmick (ujjwalkumarbhowmick30@gmail.com)*
+

@@ -1,3 +1,7 @@
+/* 
+ * Copyright Information
+ * Developer - Ujjwal Kumar Bhowmick (ujjwalkumarbhowmick30@gmail.com)
+ */
 const CACHE_NAME = 'smart-venue-cache-v1';
 const ASSETS_TO_CACHE = [
   '/',

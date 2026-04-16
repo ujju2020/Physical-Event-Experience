@@ -1,3 +1,7 @@
+/* 
+ * Copyright Information
+ * Developer - Ujjwal Kumar Bhowmick (ujjwalkumarbhowmick30@gmail.com)
+ */
 // Mock Data
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
