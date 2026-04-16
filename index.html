@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Venue Hub | Attendee App</title>
+    <!-- Google Fonts for Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons via CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Maps script with mock map (using a static image or CSS map) - we'll implement a custom CSS interactive map instead of real Google Maps for the prototype -->
+</head>
+<body>
+    <div class="app-container">
+        <!-- HEADER -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="user-greeting">
+                    <h1 class="welcome-text">Welcome, <span class="highlight">Alex</span></h1>
+                    <p class="location-status"><i data-lucide="map-pin"></i> Gate C, Section 114</p>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn search-btn" aria-label="Search">
+                        <i data-lucide="search"></i>
+                    </button>
+                    <button class="icon-btn profile-btn" aria-label="Profile">
+                        <img src="https://ui-avatars.com/api/?name=Alex+Doe&background=8b5cf6&color=fff&rounded=true" alt="User Profile">
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Quick Stats Bar -->
+            <div class="quick-stats glass-panel">
+                <div class="stat-item">
+                    <i data-lucide="clock" class="text-orange"></i>
+                    <div class="stat-text">
+                        <span class="stat-label">Restroom Wait</span>
+                        <span class="stat-value">~3 mins</span>
+                    </div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <i data-lucide="coffee" class="text-blue"></i>
+                    <div class="stat-text">
+                        <span class="stat-label">Concessions</span>
+                        <span class="stat-value">~8 mins</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main" id="main-content">
+            <!-- Content will be injected here by app.js based on active tab -->
+        </main>
+
+        <!-- BOTTOM NAVIGATION -->
+        <nav class="bottom-nav glass-nav">
+            <button class="nav-item active" data-tab="map" aria-label="Map View">
+                <i data-lucide="map"></i>
+                <span>Map</span>
+            </button>
+            <button class="nav-item" data-tab="food" aria-label="Food & Drinks">
+                <i data-lucide="shopping-bag"></i>
+                <span>Order</span>
+            </button>
+            <button class="nav-item" data-tab="alerts" aria-label="Alerts">
+                <div class="icon-wrapper">
+                    <i data-lucide="bell"></i>
+                    <span class="notification-badge">3</span>
+                </div>
+                <span>Alerts</span>
+            </button>
+            <button class="nav-item" data-tab="schedule" aria-label="Schedule">
+                <i data-lucide="calendar"></i>
+                <span>Event</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- TEMPLATES -->
+    <template id="map-view-template">
+        <section class="view-section map-view animate-in">
+            <div class="section-header">
+                <h2>Interactive Map</h2>
+                <div class="filter-chips">
+                    <button class="chip active">All</button>
+                    <button class="chip">Food</button>
+                    <button class="chip">Restrooms</button>
+                    <button class="chip">Merch</button>
+                </div>
+            </div>
+            <div class="map-container">
+                <!-- Mock Stadium Map Visualization -->
+                <div class="stadium-graphic">
+                    <div class="field">Field</div>
+                    <!-- Zones with heatmaps -->
+                    <div class="zone zone-n density-low" data-tooltip="North Gate - Smooth Flow"></div>
+                    <div class="zone zone-s density-high" data-tooltip="South Gate - Heavy Traffic"></div>
+                    <div class="zone zone-e density-med" data-tooltip="East Wing - Moderate"></div>
+                    <div class="zone zone-w density-low" data-tooltip="West Wing - Smooth Flow"></div>
+                    
+                    <!-- Points of Interest -->
+                    <div class="poi food-poi" style="top: 20%; left: 30%;" data-tooltip="Burger Queen - 15m wait"><i data-lucide="pizza"></i></div>
+                    <div class="poi toilet-poi" style="top: 80%; left: 60%;" data-tooltip="Restrooms - 2m wait"><i data-lucide="fan"></i></div>
+                    <div class="poi merch-poi" style="top: 50%; left: 85%;" data-tooltip="Team Store - 5m wait"><i data-lucide="shopping-cart"></i></div>
+                </div>
+                <div class="map-legend glass-panel">
+                    <div class="legend-item"><span class="color-dot bg-green"></span> Smooth</div>
+                    <div class="legend-item"><span class="color-dot bg-yellow"></span> Moderate</div>
+                    <div class="legend-item"><span class="color-dot bg-red"></span> Heavy</div>
+                </div>
+            </div>
+        </section>
+    </template>
+
+    <template id="food-view-template">
+        <section class="view-section food-view animate-in">
+            <div class="section-header">
+                <h2>Smart Concessions</h2>
+                <p class="subtitle">Skip the line and order from your seat</p>
+                <div class="search-bar glass-panel mt-4">
+                    <i data-lucide="search"></i>
+                    <input type="text" placeholder="Search food, drinks...">
+                </div>
+            </div>
+
+            <div class="category-slider py-4">
+                <button class="category-btn active">Featured</button>
+                <button class="category-btn">Hot Dogs & Burgers</button>
+                <button class="category-btn">Drinks</button>
+                <button class="category-btn">Snacks</button>
+            </div>
+
+            <div class="concession-list" id="concession-list-container">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+    </template>
+
+    <template id="alerts-view-template">
+        <section class="view-section alerts-view animate-in">
+            <div class="section-header">
+                <h2>Live Updates</h2>
+                <button class="text-btn">Mark all read</button>
+            </div>
+            <div class="alerts-list" id="alerts-list-container">
+                <!-- Injected via JS -->
+            </div>
+        </section>
+    </template>
+
+    <script src="app.js"></script>
+</body>
+</html>

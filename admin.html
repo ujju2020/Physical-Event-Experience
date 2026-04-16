@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Venue Command | Smart Venue Hub</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="admin-styles.css">
+</head>
+<body class="admin-body">
+    <div class="dashboard-wrapper">
+        
+        <!-- SIDEBAR -->
+        <aside class="sidebar glass-panel">
+            <div class="sidebar-header">
+                <i data-lucide="shield" class="logo-icon text-primary"></i>
+                <h2>Command<span class="highlight">Center</span></h2>
+            </div>
+
+            <nav class="sidebar-nav">
+                <button class="nav-btn active"><i data-lucide="layout-dashboard"></i> Overview</button>
+                <button class="nav-btn"><i data-lucide="users"></i> Crowd Flow</button>
+                <button class="nav-btn"><i data-lucide="calendar"></i> Staff Dispatch</button>
+                <button class="nav-btn"><i data-lucide="radio"></i> Broadcast</button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=1e293b&color=fff" alt="Admin">
+                    <div class="user-info">
+                        <span class="user-name">System Admin</span>
+                        <span class="user-role status-online">Online</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <main class="dashboard-main">
+            <!-- Top Controls -->
+            <header class="top-header">
+                <h1 class="page-title">Live Overview</h1>
+                <div class="top-controls">
+                    <div class="live-indicator">
+                        <span class="pulse-dot"></span> Live Sync
+                    </div>
+                    <div class="metric-pill glass-panel">
+                        <i data-lucide="users" class="text-blue"></i>
+                        <span>Total Est. Attendance: <strong>42,150</strong> / 45,000</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="bento-grid">
+                
+                <!-- Center Map Panel (Large) -->
+                <div class="bento-item main-map span-2 span-row-2 glass-panel">
+                    <div class="panel-header">
+                        <h3>Venue Heatmap</h3>
+                        <div class="controls">
+                            <button class="ctrl-btn active">All</button>
+                            <button class="ctrl-btn">Level 1</button>
+                            <button class="ctrl-btn">Level 2</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Expanding the map visualization from mobile to desktop -->
+                    <div class="stadium-graphic desktop">
+                        <div class="field desktop-field">Field / Pitch</div>
+                        <!-- Extended Zones -->
+                        <div class="zone zone-n density-low" id="zone-n-admin" data-zone="North Gate"></div>
+                        <div class="zone zone-s density-high" id="zone-s-admin" data-zone="South Gate"></div>
+                        <div class="zone zone-e density-med" id="zone-e-admin" data-zone="East Concourse"></div>
+                        <div class="zone zone-w density-low" id="zone-w-admin" data-zone="West Concourse"></div>
+                        
+                        <!-- Real-time Admin Callouts -->
+                        <div class="map-callout warning" style="top:75%; left:65%;">
+                            <i data-lucide="alert-triangle"></i>
+                            <span>South Gate Bottleneck</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Metrics Sidebar -->
+                <div class="bento-item live-metrics glass-panel">
+                    <div class="panel-header">
+                        <h3>Critical Metrics</h3>
+                    </div>
+                    <div class="metrics-list" id="metrics-container">
+                        <!-- Injected via app.js -->
+                    </div>
+                </div>
+
+                <!-- Incident Stream -->
+                <div class="bento-item incident-stream glass-panel span-row-2">
+                    <div class="panel-header">
+                        <h3>Incident Stream</h3>
+                        <i data-lucide="filter" class="text-muted"></i>
+                    </div>
+                    <div class="incidents-list" id="incidents-container">
+                        <!-- Injected via app.js -->
+                    </div>
+                </div>
+
+                <!-- Quick Broadcast Form -->
+                <div class="bento-item broadcast-panel glass-panel">
+                    <div class="panel-header">
+                        <h3>Quick Alert Pager</h3>
+                    </div>
+                    <form id="broadcast-form" class="broadcast-form" onsubmit="event.preventDefault(); showBroadcastSuccess();">
+                        <select class="form-input">
+                            <option>All Zones</option>
+                            <option>South Gate Only</option>
+                            <option>East Concourse</option>
+                        </select>
+                        <input type="text" class="form-input" placeholder="Alert Title (e.g. Please Use West Exit)" required>
+                        <textarea class="form-input" placeholder="Message Details..." rows="2" required></textarea>
+                        <button type="submit" class="submit-btn"><i data-lucide="send"></i> Dispatch Alert</button>
+                    </form>
+                </div>
+
+            </div>
+        </main>
+    </div>
+    
+    <!-- Notification Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="admin-app.js"></script>
+</body>
+</html>

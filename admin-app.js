@@ -1,0 +1,148 @@
+// Admin Dashboard Logic
+
+const ADMIN_DATA = {
+    metrics: [
+        { id: 1, name: "Avg Restroom Wait", value: "3.2m", icon: "refresh-cw", color: "text-blue" },
+        { id: 2, name: "Avg Food Wait", value: "12m", icon: "clock", color: "text-orange" },
+        { id: 3, name: "Active Staff", value: "244", icon: "shield-check", color: "text-primary" }
+    ],
+    incidents: [
+        { id: 101, title: "Bottleneck at South Gate", desc: "Density exceeding recommended limits. Dispatched Team Alpha for rerouting.", time: "15:22:04", severity: "critical" },
+        { id: 102, title: "Restroom C supplies low", desc: "Maintenance requested for resupply.", time: "15:10:14", severity: "normal" },
+        { id: 103, title: "East Concourse Flow Heavy", desc: "Traffic moving slow but steady. Monitoring closely.", time: "14:45:00", severity: "warning" },
+        { id: 104, title: "Gate D Scanner Error", desc: "Scanner 4 offline, tech deployed.", time: "14:12:00", severity: "normal" }
+    ]
+};
+
+function initIcons() {
+    try {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    } catch(e) {}
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+
+    // Render Metrics
+    const metricsContainer = document.getElementById('metrics-container');
+    ADMIN_DATA.metrics.forEach(metric => {
+        metricsContainer.innerHTML += `
+            <div class="metric-row">
+                <div class="metric-info">
+                    <div class="metric-icon">
+                        <i data-lucide="${metric.icon}" class="${metric.color}"></i>
+                    </div>
+                    <span class="metric-name">${metric.name}</span>
+                </div>
+                <span class="metric-num">${metric.value}</span>
+            </div>
+        `;
+    });
+
+    // Render Incidents
+    const incidentsContainer = document.getElementById('incidents-container');
+    ADMIN_DATA.incidents.forEach(inc => {
+        let sc = '';
+        if (inc.severity === 'critical') sc = 'critical';
+        
+        incidentsContainer.innerHTML += `
+            <div class="incident-card ${sc}">
+                <div class="inc-header">
+                    <span class="inc-title">${inc.title}</span>
+                    <span class="inc-time">${inc.time}</span>
+                </div>
+                <p class="inc-desc">${inc.desc}</p>
+            </div>
+        `;
+    });
+
+    // Sidebar Interactivity
+    document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            const title = e.currentTarget.innerText.trim();
+            if (title === 'Broadcast') {
+                const broadcastPanel = document.querySelector('.broadcast-panel');
+                // Focus and flash to highlight
+                broadcastPanel.style.transition = 'all 0.3s ease';
+                broadcastPanel.style.transform = 'scale(1.02)';
+                broadcastPanel.style.boxShadow = '0 0 30px rgba(99, 102, 241, 0.6)';
+                broadcastPanel.style.borderColor = 'var(--primary)';
+                
+                // Focus the first input inside the form
+                document.querySelector('.broadcast-form .form-input').focus();
+                
+                setTimeout(() => {
+                    broadcastPanel.style.transform = 'scale(1)';
+                    broadcastPanel.style.boxShadow = '0 4px 24px -1px rgba(0,0,0,0.5)';
+                    broadcastPanel.style.borderColor = 'var(--glass-border)';
+                }, 1000);
+            }
+        });
+    });
+
+    lucide.createIcons(); // re-init icons
+
+    // Simulate map pulsing
+    setInterval(() => {
+        const zoneS = document.getElementById('zone-s-admin');
+        if(zoneS) {
+            const currentOpacity = parseFloat(window.getComputedStyle(zoneS).opacity);
+            const change = (Math.random() - 0.5) * 0.1;
+            let newOpacity = currentOpacity + change;
+            newOpacity = Math.max(0.6, Math.min(newOpacity, 0.9)); // South gate stays hot
+            zoneS.style.opacity = newOpacity;
+        }
+    }, 1500);
+});
+
+// Toast functionality for the broadcast form
+window.showBroadcastSuccess = function() {
+    // 1. Capture Form Data
+    const titleInput = document.querySelector('.broadcast-form input[type="text"]');
+    const descInput = document.querySelector('.broadcast-form textarea');
+    
+    const newAlert = {
+        id: Date.now(),
+        type: "danger", // Emphasize admin broadcasts
+        title: titleInput.value,
+        desc: descInput.value,
+        time: "Just now",
+        unread: true
+    };
+    
+    // 2. Save to LocalStorage (Triggers 'storage' event in the mobile app)
+    try {
+        let currentAlerts = JSON.parse(localStorage.getItem('venue_alerts') || '[]');
+        currentAlerts.unshift(newAlert);
+        localStorage.setItem('venue_alerts', JSON.stringify(currentAlerts));
+    } catch(e) {
+        console.warn('LocalStorage blocked by browser, broadcast will not sync locally.');
+    }
+
+    // 3. Show Success Toast locally
+    const container = document.getElementById('toast-container');
+    const toastHtml = document.createElement('div');
+    toastHtml.className = 'toast';
+    toastHtml.innerHTML = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+        <span>Alert broadcasted successfully to attendee mobile devices.</span>
+    `;
+    
+    container.appendChild(toastHtml);
+
+    // Reset form
+    document.getElementById('broadcast-form').reset();
+
+    // Remove toast after 4 seconds
+    setTimeout(() => {
+        toastHtml.style.opacity = '0';
+        toastHtml.style.transform = 'translateX(100%)';
+        toastHtml.style.transition = 'all 0.3s ease';
+        setTimeout(() => toastHtml.remove(), 300);
+    }, 4000);
+}
