@@ -1,4 +1,20 @@
 // Mock Data
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
+    authDomain: "integral-hybrid-493515-b6.firebaseapp.com",
+    databaseURL: "https://integral-hybrid-493515-b6-default-rtdb.firebaseio.com",
+    projectId: "integral-hybrid-493515-b6",
+    storageBucket: "integral-hybrid-493515-b6.firebasestorage.app",
+    messagingSenderId: "370112329381",
+    appId: "1:370112329381:web:3b17f71093236f8001ff4c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const MOCK_DATA = {
     vendors: [
         { id: 1, name: "Stadium Grill", category: "Hot Dogs & Burgers", waitTime: 3, distance: "120ft", image: "https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80", status: "fast" },
@@ -13,20 +29,8 @@ const MOCK_DATA = {
     ]
 };
 
-// Safe LocalStorage wrapper to prevent crashes on strict file:// browsers
-function getSafeLocalAlerts() {
-    try {
-        return JSON.parse(localStorage.getItem('venue_alerts') || '[]');
-    } catch(e) {
-        console.warn("LocalStorage blocked by browser for local files.");
-        return [];
-    }
-}
-
-// Sync alerts from localStorage before initializing
-let localAlerts = getSafeLocalAlerts();
-MOCK_DATA.alerts = [...localAlerts, ...MOCK_DATA.alerts];
-let knownAlertsCount = localAlerts.length;
+// Keep track of loaded alerts to prevent duplicate notifications on initial load
+let isInitialFirebaseLoad = true;
 
 function initIcons() {
     try {
@@ -160,45 +164,40 @@ document.addEventListener('DOMContentLoaded', () => {
     // Default load
     switchTab('map');
     
-    // Polling LocalStorage for updates (Bypasses file:// protocol 'storage' event restrictions!)
-    setInterval(() => {
-        try {
-            const currentAlertsRaw = localStorage.getItem('venue_alerts');
-            if (currentAlertsRaw) {
-                const currentAlerts = JSON.parse(currentAlertsRaw);
-                if (currentAlerts.length > knownAlertsCount) {
-                    const newCount = currentAlerts.length - knownAlertsCount;
+    // Listen to Mobile Alerts from Firebase Realtime Database
+    const alertsRef = ref(db, 'venue_alerts');
+    onValue(alertsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            // Parse network dictionary to array and sort descending by time
+            const fetchedAlerts = Object.values(data).sort((a, b) => b.id - a.id);
+            
+            let newAlertsFound = 0;
+            fetchedAlerts.forEach(alertData => {
+                if (!MOCK_DATA.alerts.find(a => a.id === alertData.id)) {
+                    MOCK_DATA.alerts.unshift(alertData);
+                    newAlertsFound++;
                     
-                    // Process the newly added alerts
-                    for (let i = newCount - 1; i >= 0; i--) {
-                        const newestAlert = currentAlerts[i];
-                        
-                        if (!MOCK_DATA.alerts.find(a => a.id === newestAlert.id)) {
-                            MOCK_DATA.alerts.unshift(newestAlert);
-                        }
-                        
-                        showPushNotification(newestAlert);
+                    if (!isInitialFirebaseLoad) {
+                        showPushNotification(alertData);
                     }
-                    
-                    knownAlertsCount = currentAlerts.length;
-
-                    // Update notification badge
+                }
+            });
+            
+            if (newAlertsFound > 0) {
+                if (!isInitialFirebaseLoad) {
                     const badge = document.querySelector('.notification-badge');
-                    if (badge) { badge.innerText = parseInt(badge.innerText) + newCount; }
-                    
-                    // Refresh alerts tab if it's currently open
-                    const activeTab = document.querySelector('.nav-item.active').dataset.tab;
-                    if (activeTab === 'alerts') {
-                        renderAlertsTab();
-                    }
-                } else if (currentAlerts.length < knownAlertsCount) {
-                    knownAlertsCount = currentAlerts.length; // Handle clears
+                    if (badge) { badge.innerText = parseInt(badge.innerText) + newAlertsFound; }
+                }
+
+                const activeTab = document.querySelector('.nav-item.active').dataset.tab;
+                if (activeTab === 'alerts') {
+                    renderAlertsTab();
                 }
             }
-        } catch(e) {
-            // Silently fail if localStorage is blocked
         }
-    }, 1000); // Check every 1 second
+        isInitialFirebaseLoad = false;
+    });
 
 
     function showPushNotification(alert) {

@@ -1,4 +1,19 @@
 // Admin Dashboard Logic
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
+    authDomain: "integral-hybrid-493515-b6.firebaseapp.com",
+    databaseURL: "https://integral-hybrid-493515-b6-default-rtdb.firebaseio.com",
+    projectId: "integral-hybrid-493515-b6",
+    storageBucket: "integral-hybrid-493515-b6.firebasestorage.app",
+    messagingSenderId: "370112329381",
+    appId: "1:370112329381:web:3b17f71093236f8001ff4c"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
 const ADMIN_DATA = {
     metrics: [
@@ -101,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Toast functionality for the broadcast form
-window.showBroadcastSuccess = function() {
+window.showBroadcastSuccess = async function() {
     // 1. Capture Form Data
     const titleInput = document.querySelector('.broadcast-form input[type="text"]');
     const descInput = document.querySelector('.broadcast-form textarea');
@@ -115,13 +130,13 @@ window.showBroadcastSuccess = function() {
         unread: true
     };
     
-    // 2. Save to LocalStorage (Triggers 'storage' event in the mobile app)
+    // 2. Save to Firebase Realtime Database
     try {
-        let currentAlerts = JSON.parse(localStorage.getItem('venue_alerts') || '[]');
-        currentAlerts.unshift(newAlert);
-        localStorage.setItem('venue_alerts', JSON.stringify(currentAlerts));
+        const alertsRef = ref(db, 'venue_alerts');
+        const newAlertRef = push(alertsRef);
+        await set(newAlertRef, newAlert);
     } catch(e) {
-        console.warn('LocalStorage blocked by browser, broadcast will not sync locally.');
+        console.error('Firebase push failed. Check Database Rules.', e);
     }
 
     // 3. Show Success Toast locally
