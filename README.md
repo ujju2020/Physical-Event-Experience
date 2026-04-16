@@ -4,45 +4,47 @@ Welcome to the **Smart Venue Experience Hub**! This project is a dual-interface 
 
 ## 🌟 The Prototypes
 
-The project consists of two beautifully designed, fully synchronized front-end applications built with vanilla HTML, CSS, and Javascript. 
+The project consists of two beautifully designed, fully synchronized front-end applications. 
 
-**1. Attendee Mobile Web App** (`index.html`)
+**1. Attendee Mobile Web App (PWA)** (`index.html`)
 - **Interactive Stadium Map:** Features dynamically expanding heat-maps indicating which gates or sections currently have heavy foot traffic.
-- **Smart Concessions Menu:** Skip the line! Features live wait-time estimates for various food vendors around the stadium, color-coded by severity.
-- **Push Notification Hub:** Allows the user to receive live, real-time alerts straight from the stadium administration.
+- **Smart Concessions Menu:** Skip the line! Features live wait-time estimates for various food vendors around the stadium.
+- **Push Notification Hub:** Allows the user to receive live, real-time alerts straight from the stadium administration over the internet.
+- **Progressive Web App:** Fully installable to your smartphone's home screen with offline caching.
 
 **2. Venue Management Dashboard** (`admin.html`)
 - **Master Operations Map:** A high-level bento-grid view allowing staff to monitor global stadium density in real-time.
-- **Incident Stream:** A mock data-tracker feeding in simulated friction points (such as medical needs or overflowing trash).
-- **Global Broadcast Pager:** A functional form that allows administration to compose and push custom alerts to all connected attendees instantly.
+- **Incident Stream:** A data-tracker feeding in simulated friction points (such as medical needs or overflowing trash).
+- **Global Broadcast Pager:** A functional dispatch panel that allows administration to compose and push custom alerts to all connected attendees instantly.
 
-## 🚀 How to Run Locally
+## 🚀 Live Access
 
-You do not need to install any heavy Javascript frameworks to run this prototype.
+Both applications are successfully built and hosted on the public internet via **GitHub Pages**. No local servers or installation are required!
 
-1. **Install a Local Web Server.** The simplest way to run this is using the VS Code **Live Server** extension. 
-2. Open the project root folder in VS Code.
-3. Right-click both `index.html` and `admin.html` and select **Open with Live Server**.
-4. *(Optional but Highly Recommended):* Snap the two browser windows side-by-side to witness the real-time functionality!
+*   **Mobile Attendee App:** [https://ujju2020.github.io/Physical-Event-Experience/index.html](https://ujju2020.github.io/Physical-Event-Experience/index.html)
+*   **Admin Dashboard:** [https://ujju2020.github.io/Physical-Event-Experience/admin.html](https://ujju2020.github.io/Physical-Event-Experience/admin.html)
 
-## ⚡ Real-Time Testing
+*Tip: Open the Mobile App on your phone and the Admin Dashboard on your laptop to experience true cross-device synchronization.*
 
-This project leverages a lightweight LocalStorage trick to emulate cloud WebSocket architecture locally. 
+## ⚡ Cloud Infrastructure
 
-When you type a message into the **Quick Alert Pager** inside the Admin Dashboard and click *Dispatch*, the javascript engine instantly fires a system-level Storage Event across the server, which the Attendee App immediately catches. You will see your custom push notification drop down from the top of the mobile screen in under a second!
+This application uses a fully serverless, real-time cloud architecture:
+*   The system utilizes **Google Firebase Realtime Database**.
+*   When an Admin dispatches an alert, the payload is authenticated and routed through Google Cloud.
+*   The Attendee mobile app maintains a persistent WebSocket `onValue()` listener that immediately binds the incoming payload to the screen, sliding down a custom notification toast in milliseconds.
 
 ## 🛠️ Built With
 
-- **HTML5 & Vanilla JS:** No build-steps or compilation required.
-- **CSS3:** Premium deep-space aesthetic, glassmorphism UI components, responsive variables, and hardware-accelerated micro-animations.
-- **Lucide Icons:** Sourced gracefully via unpkg CDN.
+- **HTML5 & Vanilla JS ES Modules:** No complex compilation steps required.
+- **CSS3:** Premium deep-space aesthetic, glassmorphism UI components, and hardware-accelerated animations.
+- **Firebase v12 JS SDK:** Cloud routing and real-time data synchronization.
+- **Service Workers:** Providing PWA offline-caching support.
 
 ## 🔮 Next Steps (Roadmap)
 
-To elevate this prototype to a production-ready system:
-- Connect to **Firebase** or **Socket.io** to allow live signaling over actual remote devices.
-- Convert the mobile-view into a **Progressive Web App (PWA)** for easy home-screen installation.
-- Implement hardware API bindings to pull live turnstile or heat-sensor data onto the map!
+To elevate this prototype to a full production system:
+- Implement hardware API bindings to pull live turnstile or heat-sensor data onto the map instead of randomized mock data.
+- Integrate Firebase Authentication to secure the Admin Dashboard behind an admin-only login screen.
 
 ---
 *Built to transform chaos into coordination.*
