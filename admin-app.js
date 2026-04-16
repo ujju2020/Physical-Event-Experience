@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
+    apiKey: "YourAPIKey",
     authDomain: "integral-hybrid-493515-b6.firebaseapp.com",
     databaseURL: "https://integral-hybrid-493515-b6-default-rtdb.firebaseio.com",
     projectId: "integral-hybrid-493515-b6",
@@ -34,7 +34,7 @@ function initIcons() {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
-    } catch(e) {}
+    } catch (e) { }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ADMIN_DATA.incidents.forEach(inc => {
         let sc = '';
         if (inc.severity === 'critical') sc = 'critical';
-        
+
         incidentsContainer.innerHTML += `
             <div class="incident-card ${sc}">
                 <div class="inc-header">
@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
-            
+
             const title = e.currentTarget.innerText.trim();
             if (title === 'Broadcast') {
                 const broadcastPanel = document.querySelector('.broadcast-panel');
@@ -87,10 +87,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 broadcastPanel.style.transform = 'scale(1.02)';
                 broadcastPanel.style.boxShadow = '0 0 30px rgba(99, 102, 241, 0.6)';
                 broadcastPanel.style.borderColor = 'var(--primary)';
-                
+
                 // Focus the first input inside the form
                 document.querySelector('.broadcast-form .form-input').focus();
-                
+
                 setTimeout(() => {
                     broadcastPanel.style.transform = 'scale(1)';
                     broadcastPanel.style.boxShadow = '0 4px 24px -1px rgba(0,0,0,0.5)';
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Simulate map pulsing
     setInterval(() => {
         const zoneS = document.getElementById('zone-s-admin');
-        if(zoneS) {
+        if (zoneS) {
             const currentOpacity = parseFloat(window.getComputedStyle(zoneS).opacity);
             const change = (Math.random() - 0.5) * 0.1;
             let newOpacity = currentOpacity + change;
@@ -116,11 +116,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Toast functionality for the broadcast form
-window.showBroadcastSuccess = async function() {
+window.showBroadcastSuccess = async function () {
     // 1. Capture Form Data
     const titleInput = document.querySelector('.broadcast-form input[type="text"]');
     const descInput = document.querySelector('.broadcast-form textarea');
-    
+
     const newAlert = {
         id: Date.now(),
         type: "danger", // Emphasize admin broadcasts
@@ -129,13 +129,13 @@ window.showBroadcastSuccess = async function() {
         time: "Just now",
         unread: true
     };
-    
+
     // 2. Save to Firebase Realtime Database
     try {
         const alertsRef = ref(db, 'venue_alerts');
         const newAlertRef = push(alertsRef);
         await set(newAlertRef, newAlert);
-    } catch(e) {
+    } catch (e) {
         console.error('Firebase push failed. Check Database Rules.', e);
     }
 
@@ -147,7 +147,7 @@ window.showBroadcastSuccess = async function() {
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
         <span>Alert broadcasted successfully to attendee mobile devices.</span>
     `;
-    
+
     container.appendChild(toastHtml);
 
     // Reset form

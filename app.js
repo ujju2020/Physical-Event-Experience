@@ -3,7 +3,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/fireba
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
+    apiKey: "YourAPIKey",
     authDomain: "integral-hybrid-493515-b6.firebaseapp.com",
     databaseURL: "https://integral-hybrid-493515-b6-default-rtdb.firebaseio.com",
     projectId: "integral-hybrid-493515-b6",
@@ -37,7 +37,7 @@ function initIcons() {
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
-    } catch(e) {}
+    } catch (e) { }
 }
 
 // Initialize app when DOM loads
@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = document.getElementById('map-view-template');
         mainContent.innerHTML = '';
         mainContent.appendChild(template.content.cloneNode(true));
-        
+
         // Setup Map Interactions after render
         initIcons();
     };
@@ -62,9 +62,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = document.getElementById('food-view-template');
         mainContent.innerHTML = '';
         mainContent.appendChild(template.content.cloneNode(true));
-        
+
         const container = mainContent.querySelector('.concession-list');
-        
+
         MOCK_DATA.vendors.forEach(vendor => {
             if (!vendor) return;
             let badgeClass = '';
@@ -97,9 +97,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const template = document.getElementById('alerts-view-template');
         mainContent.innerHTML = '';
         mainContent.appendChild(template.content.cloneNode(true));
-        
+
         const container = mainContent.querySelector('.alerts-list');
-        
+
         MOCK_DATA.alerts.forEach(alert => {
             if (!alert) return;
             let iconText = 'info';
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const switchTab = (tabId) => {
         // Update nav UI
         navButtons.forEach(btn => {
-            if(btn.dataset.tab === tabId) {
+            if (btn.dataset.tab === tabId) {
                 btn.classList.add('active');
             } else {
                 btn.classList.remove('active');
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Render content
-        switch(tabId) {
+        switch (tabId) {
             case 'map': renderMapTab(); break;
             case 'food': renderFoodTab(); break;
             case 'alerts': renderAlertsTab(); break;
@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Default load
     switchTab('map');
-    
+
     // Listen to Mobile Alerts from Firebase Realtime Database
     const alertsRef = ref(db, 'venue_alerts');
     onValue(alertsRef, (snapshot) => {
@@ -171,19 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = snapshot.val();
             // Parse network dictionary to array and sort descending by time
             const fetchedAlerts = Object.values(data).sort((a, b) => b.id - a.id);
-            
+
             let newAlertsFound = 0;
             fetchedAlerts.forEach(alertData => {
                 if (!MOCK_DATA.alerts.find(a => a.id === alertData.id)) {
                     MOCK_DATA.alerts.unshift(alertData);
                     newAlertsFound++;
-                    
+
                     if (!isInitialFirebaseLoad) {
                         showPushNotification(alertData);
                     }
                 }
             });
-            
+
             if (newAlertsFound > 0) {
                 if (!isInitialFirebaseLoad) {
                     const badge = document.querySelector('.notification-badge');
@@ -203,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function showPushNotification(alert) {
         // Prevent stacking too many toasts visually, simple replace
         const existing = document.getElementById('attendee-push-toast');
-        if(existing) existing.remove();
+        if (existing) existing.remove();
 
         const toast = document.createElement('div');
         toast.id = 'attendee-push-toast';
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="font-size:0.85rem;">${alert.title}</span>
             </div>
         `;
-        
+
         // Let user tap to jump to alerts
         toast.addEventListener('click', () => {
             switchTab('alerts');
@@ -244,7 +244,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Auto dismiss after 5 seconds
         setTimeout(() => {
-            if(toast.parentElement) {
+            if (toast.parentElement) {
                 toast.style.animation = 'none'; // reset
                 toast.style.transform = 'translateY(-20px)';
                 toast.style.opacity = '0';
@@ -253,7 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }, 5000);
     }
-    
+
     // Include the slideDown keyframe globally on first inject
     if (!document.getElementById('push-anim')) {
         const style = document.createElement('style');
@@ -271,11 +271,11 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(() => {
         const zones = document.querySelectorAll('.zone');
         zones.forEach(zone => {
-           const currentOpacity = parseFloat(window.getComputedStyle(zone).opacity);
-           const change = (Math.random() - 0.5) * 0.2;
-           let newOpacity = currentOpacity + change;
-           newOpacity = Math.max(0.3, Math.min(newOpacity, 0.8)); // constrain between 0.3 and 0.8
-           zone.style.opacity = newOpacity;
+            const currentOpacity = parseFloat(window.getComputedStyle(zone).opacity);
+            const change = (Math.random() - 0.5) * 0.2;
+            let newOpacity = currentOpacity + change;
+            newOpacity = Math.max(0.3, Math.min(newOpacity, 0.8)); // constrain between 0.3 and 0.8
+            zone.style.opacity = newOpacity;
         });
     }, 2000);
 });
