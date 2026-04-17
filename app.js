@@ -59,6 +59,33 @@ document.addEventListener('DOMContentLoaded', () => {
         mainContent.appendChild(template.content.cloneNode(true));
 
         // Setup Map Interactions after render
+        const mapChips = mainContent.querySelectorAll('.chip');
+        const pois = mainContent.querySelectorAll('.poi');
+
+        mapChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                // Update active class
+                mapChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+
+                const filter = chip.textContent.toLowerCase().trim();
+                
+                pois.forEach(poi => {
+                    if (filter === 'all') {
+                        poi.style.display = 'flex';
+                    } else if (filter === 'food' && poi.classList.contains('food-poi')) {
+                        poi.style.display = 'flex';
+                    } else if (filter === 'restrooms' && poi.classList.contains('toilet-poi')) {
+                        poi.style.display = 'flex';
+                    } else if (filter === 'merch' && poi.classList.contains('merch-poi')) {
+                        poi.style.display = 'flex';
+                    } else {
+                        poi.style.display = 'none';
+                    }
+                });
+            });
+        });
+
         initIcons();
     };
 
