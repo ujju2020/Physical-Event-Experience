@@ -49,6 +49,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Lucide icons
     initIcons();
 
+    // Setup Header actions
+    const globalSearchBtn = document.querySelector('.search-btn');
+    if (globalSearchBtn) {
+        globalSearchBtn.addEventListener('click', () => {
+            alert('Global Search feature is in development. Check out the Smart Concessions tab to test the local search!');
+        });
+    }
+    
+    const profileBtn = document.querySelector('.profile-btn');
+    if (profileBtn) {
+        profileBtn.addEventListener('click', () => {
+            alert('Profile Settings coming soon!');
+        });
+    }
+
     const mainContent = document.getElementById('main-content');
     const navButtons = document.querySelectorAll('.nav-item');
 
