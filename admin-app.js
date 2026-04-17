@@ -86,6 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = e.currentTarget.innerText.trim();
             if (title === 'Broadcast') {
                 const broadcastPanel = document.querySelector('.broadcast-panel');
+                
+                // Scroll into view on smaller laptops
+                broadcastPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
                 // Focus and flash to highlight
                 broadcastPanel.style.transition = 'all 0.3s ease';
                 broadcastPanel.style.transform = 'scale(1.02)';
@@ -100,6 +104,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     broadcastPanel.style.boxShadow = '0 4px 24px -1px rgba(0,0,0,0.5)';
                     broadcastPanel.style.borderColor = 'var(--glass-border)';
                 }, 1000);
+            } else if (title === 'Crowd Flow' || title === 'Staff Dispatch') {
+                alert(`${title} module is coming soon in the next update!`);
+                // Revert to overview
+                document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('.sidebar-nav .nav-btn:first-child').classList.add('active');
             }
         });
     });
