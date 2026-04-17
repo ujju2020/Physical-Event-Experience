@@ -78,37 +78,45 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Sidebar Interactivity
+    const overviewPanels = ['.main-map', '.live-metrics', '.incident-stream'];
+    const broadcastPanel = document.querySelector('.broadcast-panel');
+    
+    // Hide Broadcast initially
+    broadcastPanel.classList.add('tab-hidden');
+
     document.querySelectorAll('.sidebar-nav .nav-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
             e.currentTarget.classList.add('active');
 
             const title = e.currentTarget.innerText.trim();
+            const pageTitle = document.querySelector('.page-title');
+
             if (title === 'Broadcast') {
-                const broadcastPanel = document.querySelector('.broadcast-panel');
+                // Hide Overview Panels
+                overviewPanels.forEach(selector => document.querySelector(selector).classList.add('tab-hidden'));
                 
-                // Scroll into view on smaller laptops
-                broadcastPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Show Broadcast Panel
+                broadcastPanel.classList.remove('tab-hidden');
+                broadcastPanel.style.gridColumn = '1 / -1'; // stretch across full width
+                pageTitle.innerText = 'Broadcast Operations';
 
-                // Focus and flash to highlight
-                broadcastPanel.style.transition = 'all 0.3s ease';
-                broadcastPanel.style.transform = 'scale(1.02)';
-                broadcastPanel.style.boxShadow = '0 0 30px rgba(99, 102, 241, 0.6)';
-                broadcastPanel.style.borderColor = 'var(--primary)';
-
-                // Focus the first input inside the form
                 document.querySelector('.broadcast-form .form-input').focus();
-
-                setTimeout(() => {
-                    broadcastPanel.style.transform = 'scale(1)';
-                    broadcastPanel.style.boxShadow = '0 4px 24px -1px rgba(0,0,0,0.5)';
-                    broadcastPanel.style.borderColor = 'var(--glass-border)';
-                }, 1000);
+            } else if (title === 'Overview') {
+                // Show Overview Panels
+                overviewPanels.forEach(selector => document.querySelector(selector).classList.remove('tab-hidden'));
+                
+                // Hide Broadcast Panel
+                broadcastPanel.classList.add('tab-hidden');
+                pageTitle.innerText = 'Live Overview';
             } else if (title === 'Crowd Flow' || title === 'Staff Dispatch') {
                 alert(`${title} module is coming soon in the next update!`);
-                // Revert to overview
-                document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
-                document.querySelector('.sidebar-nav .nav-btn:first-child').classList.add('active');
+                
+                // Revert to overview (simulate a bounce-back)
+                setTimeout(() => {
+                    document.querySelectorAll('.sidebar-nav .nav-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('.sidebar-nav .nav-btn:first-child').classList.add('active');
+                }, 100);
             }
         });
     });

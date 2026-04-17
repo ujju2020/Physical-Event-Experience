@@ -240,6 +240,8 @@ body.admin-body {
 .ctrl-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
 /* --- MAP VISUALIZATION (DESKTOP) --- */
+.tab-hidden { display: none !important; }
+
 .stadium-graphic.desktop {
     flex: 1;
     width: 100%;
