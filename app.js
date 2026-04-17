@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (vendor.waitTime > 20) { badgeClass = 'critical'; badgeIcon = 'alert-triangle'; }
 
             const cardHtml = `
-                <div class="vendor-card glass-panel">
+                <div class="vendor-card glass-panel" data-category="${vendor.category.toLowerCase()}" data-name="${vendor.name.toLowerCase()}">
                     <img src="${vendor.image}" alt="${vendor.name}" class="vendor-img">
                     <div class="vendor-info">
                         <h3 class="vendor-name">${vendor.name}</h3>
@@ -119,6 +119,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
             container.innerHTML += cardHtml;
+        });
+
+        // Add filter functionality
+        const searchInput = mainContent.querySelector('.search-bar input');
+        const categoryBtns = mainContent.querySelectorAll('.category-btn');
+        let currentCategory = 'featured'; // default active is Featured
+
+        const applyFilters = () => {
+            const query = searchInput.value.toLowerCase().trim();
+            const cards = container.querySelectorAll('.vendor-card');
+            
+            cards.forEach(card => {
+                const name = card.dataset.name;
+                const category = card.dataset.category;
+                
+                const matchesSearch = name.includes(query);
+                // "Featured" can act as "All" in this context since there's no "All" button
+                const matchesCategory = currentCategory === 'featured' || category === currentCategory;
+                
+                if (query.length > 0) {
+                    card.style.display = matchesSearch ? 'flex' : 'none';
+                } else {
+                    card.style.display = matchesCategory ? 'flex' : 'none';
+                }
+            });
+        };
+
+        if (searchInput) {
+            searchInput.addEventListener('input', applyFilters);
+        }
+
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                categoryBtns.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.textContent.toLowerCase().trim();
+                applyFilters();
+            });
         });
 
         initIcons();
