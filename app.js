@@ -206,6 +206,25 @@ document.addEventListener('DOMContentLoaded', () => {
             container.innerHTML += cardHtml;
         });
 
+        const markReadBtn = mainContent.querySelector('.section-header .text-btn');
+        if (markReadBtn) {
+            markReadBtn.addEventListener('click', () => {
+                // Update underlying data
+                MOCK_DATA.alerts.forEach(a => { if(a) a.unread = false; });
+                
+                // Remove UI dots for current view
+                const unreadDots = container.querySelectorAll('.unread-dot');
+                unreadDots.forEach(dot => dot.remove());
+
+                // Reset and hide nav badge
+                const badge = document.querySelector('.notification-badge');
+                if (badge) {
+                    badge.innerText = '0';
+                    badge.style.display = 'none';
+                }
+            });
+        }
+
         initIcons();
     };
 
@@ -271,7 +290,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (newAlertsFound > 0) {
                 if (!isInitialFirebaseLoad) {
                     const badge = document.querySelector('.notification-badge');
-                    if (badge) { badge.innerText = parseInt(badge.innerText) + newAlertsFound; }
+                    if (badge) { 
+                        const currentVal = parseInt(badge.innerText) || 0;
+                        badge.innerText = currentVal + newAlertsFound;
+                        badge.style.display = 'flex'; // Ensure it's visible again
+                    }
                 }
 
                 const activeTab = document.querySelector('.nav-item.active').dataset.tab;
