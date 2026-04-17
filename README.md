@@ -7,15 +7,16 @@ Welcome to the **Smart Venue Experience Hub**! This project is a dual-interface 
 The project consists of two beautifully designed, fully synchronized front-end applications. 
 
 **1. Attendee Mobile Web App (PWA)** (`index.html`)
-- **Interactive Stadium Map:** Features dynamically expanding heat-maps indicating which gates or sections currently have heavy foot traffic.
-- **Smart Concessions Menu:** Skip the line! Features live wait-time estimates for various food vendors around the stadium.
-- **Push Notification Hub:** Allows the user to receive live, real-time alerts straight from the stadium administration over the internet.
-- **Progressive Web App:** Fully installable to your smartphone's home screen with offline caching.
+- **Interactive Stadium Map:** Features dynamically expanding heat-maps indicating foot traffic.
+- **Smart Concessions Search:** Skip the line! Features live wait-time estimates and an instant real-time search filter for various food vendors.
+- **Push Notification Hub:** Receive live alerts straight from the stadium administration over the internet, complete with intelligent "unread" badging and sweeping functionality.
+- **Progressive Web App:** Fully installable to your smartphone's home screen with offline caching and native iOS/Android safe-area layout tuning.
 
 **2. Venue Management Dashboard** (`admin.html`)
-- **Master Operations Map:** A high-level bento-grid view allowing staff to monitor global stadium density in real-time.
+- **Responsive Command Center:** Now strictly responsive! Functions flawlessly across massive monitor walls down to pocket-sized mobile screens using a scrollable horizontal tab array system.
+- **Dynamic Floor Planning:** Visually toggle the master map between Level 1, Level 2, or All to instantly isolate heat zones and selectively display relevant operational callouts.
 - **Incident Stream:** A data-tracker feeding in simulated friction points (such as medical needs or overflowing trash).
-- **Global Broadcast Pager:** A functional dispatch panel that allows administration to compose and push custom alerts to all connected attendees instantly.
+- **Global Broadcast Console:** A functional tabbed dispatch panel that allows administration to compose and push custom alerts to all connected attendees instantly.
 
 ## 🚀 Live Access
 
