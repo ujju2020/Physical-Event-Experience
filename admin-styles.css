@@ -399,3 +399,62 @@ body.admin-body {
     from { transform: translateX(100%); opacity: 0; }
     to { transform: translateX(0); opacity: 1; }
 }
+
+/* --- MOBILE RESPONSIVENESS (WEB VIEW) --- */
+@media (max-width: 800px) {
+    body.admin-body { display: block; overflow-y: auto; height: auto; min-height: 100vh; padding-bottom: 20px; }
+    .dashboard-wrapper { flex-direction: column; padding: 12px; height: auto; gap: 12px; }
+    
+    /* Top Horizontal Nav */
+    .sidebar { width: 100%; padding: 16px; border-radius: 12px; }
+    .sidebar-header { margin-bottom: 16px; justify-content: center; }
+    .sidebar-header h2 { font-size: 1.2rem; }
+    
+    .sidebar-nav { 
+        flex-direction: row; 
+        overflow-x: auto; 
+        padding-bottom: 4px;
+        gap: 8px; 
+    }
+    .sidebar-nav::-webkit-scrollbar { height: 4px; }
+    .sidebar-nav::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 4px; }
+    
+    .nav-btn { flex-shrink: 0; justify-content: center; padding: 10px 16px; white-space: nowrap; }
+    .nav-btn.active {
+        border-left: none;
+        border-bottom: 3px solid var(--primary);
+        border-radius: 8px 8px 0 0;
+        background: linear-gradient(0deg, rgba(99, 102, 241, 0.2) 0%, transparent 100%);
+    }
+    
+    .sidebar-footer { display: none; } /* Hide heavy user card on mobile */
+    
+    .dashboard-main { overflow: visible; padding-right: 0; }
+    
+    /* Header layout */
+    .top-header { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .page-title { font-size: 1.5rem; }
+    .top-controls { width: 100%; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .metric-pill { width: 100%; justify-content: center; }
+    
+    /* Linearize Bento Grid */
+    .bento-grid { 
+        grid-template-columns: 1fr; 
+        grid-template-rows: auto;
+        padding-bottom: 0;
+    }
+    .span-2 { grid-column: auto; }
+    .span-row-2 { grid-row: auto; }
+    
+    /* Downscale Map Sizes */
+    .stadium-graphic.desktop { min-height: 400px; }
+    .field.desktop-field { width: 50%; height: 60%; font-size: 0.8rem; }
+    .zone-n { left: 25%; width: 120px; height: 100px; }
+    .zone-s { right: 25%; width: 150px; height: 150px; }
+    .zone-e { right: 0; width: 150px; height: 200px; }
+    .zone-w { left: 0; width: 100px; height: 100px; }
+    
+    /* Alert Toasts */
+    .toast-container { width: 100%; left: 0; right: 0; bottom: 10px; padding: 0 10px; align-items: center; }
+    .toast { width: 100%; justify-content: center; }
+}
