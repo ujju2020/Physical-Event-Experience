@@ -118,6 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Venue Map Controls
     const mapControls = document.querySelectorAll('.main-map .ctrl-btn');
     const zones = document.querySelectorAll('.stadium-graphic .zone');
+    const callouts = document.querySelectorAll('.stadium-graphic .map-callout');
     
     mapControls.forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -143,6 +144,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     } else {
                         zone.classList.remove('hidden-zone');
                     }
+                }
+            });
+
+            callouts.forEach(callout => {
+                // The current mock callout is for the South Gate (Level 2), so hide on Level 1
+                if (level === 'Level 1') {
+                    callout.classList.add('hidden-zone');
+                    callout.style.transition = 'opacity 0.3s ease';
+                } else {
+                    callout.classList.remove('hidden-zone');
                 }
             });
         });
