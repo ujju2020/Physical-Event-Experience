@@ -21,10 +21,10 @@ const db = getDatabase(app);
 
 const MOCK_DATA = {
     vendors: [
-        { id: 1, name: "Stadium Grill", category: "Hot Dogs & Burgers", waitTime: 3, distance: "120ft", image: "https://images.unsplash.com/photo-1550547660-d9450f859349?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80", status: "fast" },
-        { id: 2, name: "Pizza Paradiso", category: "Featured", waitTime: 12, distance: "300ft", image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80", status: "med" },
-        { id: 3, name: "Craft Bev Co.", category: "Drinks", waitTime: 25, distance: "150ft", image: "https://images.unsplash.com/photo-1536935338788-846bb9981813?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80", status: "slow" },
-        { id: 4, name: "Nacho Nation", category: "Snacks", waitTime: 5, distance: "400ft", image: "https://images.unsplash.com/photo-1513456852971-30c0b8199d4d?ixlib=rb-1.2.1&auto=format&fit=crop&w=200&q=80", status: "fast" }
+        { id: 1, name: "Stadium Grill", category: "Hot Dogs & Burgers", waitTime: 3, distance: "120ft", image: "https://placehold.co/400x400/8b5cf6/ffffff?font=Outfit&text=Grill", status: "fast" },
+        { id: 2, name: "Pizza Paradiso", category: "Featured", waitTime: 12, distance: "300ft", image: "https://placehold.co/400x400/0ea5e9/ffffff?font=Outfit&text=Pizza", status: "med" },
+        { id: 3, name: "Craft Bev Co.", category: "Drinks", waitTime: 25, distance: "150ft", image: "https://placehold.co/400x400/f43f5e/ffffff?font=Outfit&text=Drinks", status: "slow" },
+        { id: 4, name: "Nacho Nation", category: "Snacks", waitTime: 5, distance: "400ft", image: "https://placehold.co/400x400/10b981/ffffff?font=Outfit&text=Nachos", status: "fast" }
     ],
     alerts: [
         { id: 1, type: "danger", title: "Heavy Crowd at South Gate", desc: "Please use the East Gate for faster exiting post-game.", time: "Just now", unread: true },
