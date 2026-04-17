@@ -115,6 +115,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
     lucide.createIcons(); // re-init icons
 
+    // Venue Map Controls
+    const mapControls = document.querySelectorAll('.main-map .ctrl-btn');
+    const zones = document.querySelectorAll('.stadium-graphic .zone');
+    
+    mapControls.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            mapControls.forEach(b => b.classList.remove('active'));
+            e.currentTarget.classList.add('active');
+            
+            const level = e.currentTarget.innerText.trim();
+            
+            zones.forEach(zone => {
+                if (level === 'All') {
+                    zone.classList.remove('hidden-zone');
+                } else if (level === 'Level 1') {
+                    // Mock: Level 1 shows only East/West concourse
+                    if (zone.classList.contains('zone-n') || zone.classList.contains('zone-s')) {
+                        zone.classList.add('hidden-zone');
+                    } else {
+                        zone.classList.remove('hidden-zone');
+                    }
+                } else if (level === 'Level 2') {
+                    // Mock: Level 2 shows only North/South gates
+                    if (zone.classList.contains('zone-e') || zone.classList.contains('zone-w')) {
+                        zone.classList.add('hidden-zone');
+                    } else {
+                        zone.classList.remove('hidden-zone');
+                    }
+                }
+            });
+        });
+    });
+
     // Simulate map pulsing
     setInterval(() => {
         const zoneS = document.getElementById('zone-s-admin');

@@ -270,6 +270,7 @@ body.admin-body {
 }
 
 .zone { position: absolute; border-radius: 50%; filter: blur(35px); opacity: 0.5; transition: all 1s ease; }
+.zone.hidden-zone { opacity: 0 !important; pointer-events: none; }
 /* Modified Desktop Zones */
 .zone-n { top: 0px; left: 35%; width: 200px; height: 150px; }
 .zone-s { bottom: 0px; right: 30%; width: 250px; height: 250px; } /* Heavy focus here */
