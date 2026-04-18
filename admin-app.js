@@ -5,7 +5,7 @@
 // Admin Dashboard Logic
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -59,6 +59,9 @@ function initIcons() {
 
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
+
+    // Track admin session start
+    logEvent(analytics, 'admin_session_start', { app_name: 'SmartVenueHub_Admin' });
 
     // Render Metrics
     const metricsContainer = document.getElementById('metrics-container');
@@ -114,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const title = e.currentTarget.innerText.trim();
             const pageTitle = document.querySelector('.page-title');
+            logEvent(analytics, 'module_navigated', { module_name: title });
 
             if (title === 'Broadcast') {
                 // Hide Overview Panels
@@ -157,6 +161,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.currentTarget.classList.add('active');
             
             const level = e.currentTarget.innerText.trim();
+            logEvent(analytics, 'map_level_toggled', { level: level });
             
             zones.forEach(zone => {
                 if (level === 'All') {
@@ -218,11 +223,12 @@ window.showBroadcastSuccess = async function () {
         unread: true
     };
 
-    // 2. Save to Firebase Realtime Database
+    // 2. Save to Firebase Realtime Database & track analytics
     try {
         const alertsRef = ref(db, 'venue_alerts');
         const newAlertRef = push(alertsRef);
         await set(newAlertRef, newAlert);
+        logEvent(analytics, 'broadcast_dispatched', { alert_title: newAlert.title, alert_type: newAlert.type });
     } catch (e) {
         console.error('Firebase push failed. Check Database Rules.', e);
     }

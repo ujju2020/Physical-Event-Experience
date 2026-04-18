@@ -5,7 +5,7 @@
 // Mock Data
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -62,6 +62,9 @@ function initIcons() {
 
 // Initialize app when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
+    // Track app open event
+    logEvent(analytics, 'app_open', { app_name: 'SmartVenueHub_Attendee' });
+
     // Initialize Lucide icons
     initIcons();
 
@@ -100,6 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chip.classList.add('active');
 
                 const filter = chip.textContent.toLowerCase().trim();
+                logEvent(analytics, 'map_filter_applied', { filter_type: filter });
                 
                 pois.forEach(poi => {
                     if (filter === 'all') {
@@ -178,7 +182,12 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (searchInput) {
-            searchInput.addEventListener('input', applyFilters);
+            searchInput.addEventListener('input', () => {
+                applyFilters();
+                if (searchInput.value.trim().length > 0) {
+                    logEvent(analytics, 'vendor_searched', { query: searchInput.value.trim() });
+                }
+            });
         }
 
         categoryBtns.forEach(btn => {
@@ -229,6 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const markReadBtn = mainContent.querySelector('.section-header .text-btn');
         if (markReadBtn) {
             markReadBtn.addEventListener('click', () => {
+                logEvent(analytics, 'mark_all_read', { alert_count: MOCK_DATA.alerts.length });
                 // Update underlying data
                 MOCK_DATA.alerts.forEach(a => { if(a) a.unread = false; });
                 
@@ -261,12 +271,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Navigation logic
     const switchTab = (tabId) => {
+        // Track tab navigation
+        logEvent(analytics, 'tab_view', { tab_name: tabId });
+
         // Update nav UI
         navButtons.forEach(btn => {
             if (btn.dataset.tab === tabId) {
                 btn.classList.add('active');
+                btn.setAttribute('aria-selected', 'true');
             } else {
                 btn.classList.remove('active');
+                btn.setAttribute('aria-selected', 'false');
             }
         });
 
