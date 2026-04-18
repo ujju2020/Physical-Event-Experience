@@ -2,9 +2,18 @@
 
 Welcome to the **Smart Venue Experience Hub**! This project is a dual-interface software prototype designed to dramatically improve the physical event experience for attendees at large-scale sporting venues through wait-time visibility, crowd density mapping, and real-time operational coordination.
 
-## 🌟 The Prototypes
+## 🎯 Chosen Vertical
+**Physical Event Experience (Sporting Event Experiences)**
+We chose this vertical to solve real-world friction points at massive venues, specifically tackling congestion management, concession wait times, and emergency administration-to-attendee communication.
 
-The project consists of two beautifully designed, fully synchronized front-end applications. 
+## 🧠 Approach and Logic
+Our approach was to build a dual-interface architecture (an Attendee App and an Admin Dashboard) that communicates in real-time. The logic centers around:
+- **Spatial Awareness:** Using dynamic heatmaps to direct attendees away from heavily congested areas.
+- **Time Optimization:** Calculating and displaying real-time wait times for concessions to distribute attendee load.
+- **Instant Communication:** Implementing a global push-notification network via WebSockets to alert users instantly of incidents, rather than relying on PA systems or static signs.
+
+## ⚙️ How the Solution Works
+The project consists of two beautifully designed, fully synchronized front-end applications powered by Google Firebase Realtime Database for state synchronization:
 
 **1. Attendee Mobile Web App (PWA)** (`index.html`)
 - **Interactive Stadium Map:** Features dynamically expanding heat-maps indicating foot traffic.
@@ -46,6 +55,12 @@ This application uses a fully serverless, real-time cloud architecture:
 To elevate this prototype to a full production system:
 - Implement hardware API bindings to pull live turnstile or heat-sensor data onto the map instead of randomized mock data.
 - Integrate Firebase Authentication to secure the Admin Dashboard behind an admin-only login screen.
+
+## 🤔 Assumptions Made
+- We assume the venue provides reliable public Wi-Fi for attendees to maintain the WebSocket connection.
+- We assume attendees will actively use their smartphones during intervals to navigate the venue.
+- Security and authentication implementations for the Admin dashboard were stubbed out for the scope of this hackathon to focus on realtime state sync UI/UX.
+- Randomized data generation simulates actual venue foot-traffic API outputs.
 
 ---
 ---
