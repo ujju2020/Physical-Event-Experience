@@ -5,6 +5,7 @@
 // Mock Data
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -17,7 +18,22 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
+
+// Simple XSS Mitigation to prevent script injection payloads
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
 
 const MOCK_DATA = {
     vendors: [
@@ -190,6 +206,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (alert.type === 'danger') iconText = 'alert-circle';
             if (alert.type === 'promo') iconText = 'tag';
 
+            const safeTitle = escapeHTML(alert.title);
+            const safeDesc = escapeHTML(alert.desc);
+            const safeTime = escapeHTML(alert.time);
+
             const cardHtml = `
                 <div class="alert-card glass-panel">
                     ${alert.unread ? '<div class="unread-dot"></div>' : ''}
@@ -197,9 +217,9 @@ document.addEventListener('DOMContentLoaded', () => {
                         <i data-lucide="${iconText}"></i>
                     </div>
                     <div class="alert-content">
-                        <h4>${alert.title}</h4>
-                        <p>${alert.desc}</p>
-                        <span class="alert-time">${alert.time}</span>
+                        <h4>${safeTitle}</h4>
+                        <p>${safeDesc}</p>
+                        <span class="alert-time">${safeTime}</span>
                     </div>
                 </div>
             `;
@@ -332,11 +352,12 @@ document.addEventListener('DOMContentLoaded', () => {
             animation: slideDownFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             cursor: pointer;
         `;
+        const safeTitle = escapeHTML(alert.title);
         toast.innerHTML = `
             <i data-lucide="alert-triangle" style="width: 24px; height: 24px;"></i>
             <div>
                 <strong style="display:block; font-size:1rem;">ADMIN ALERT</strong>
-                <span style="font-size:0.85rem;">${alert.title}</span>
+                <span style="font-size:0.85rem;">${safeTitle}</span>
             </div>
         `;
 

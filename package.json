@@ -1,0 +1,12 @@
+{
+  "name": "physical-event-experience",
+  "version": "1.0.0",
+  "description": "Smart Venue Experience Hub",
+  "main": "app.js",
+  "scripts": {
+    "test": "node --test tests/"
+  },
+  "keywords": [],
+  "author": "Ujjwal Kumar Bhowmick",
+  "license": "ISC"
+}

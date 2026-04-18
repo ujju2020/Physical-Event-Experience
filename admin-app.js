@@ -5,6 +5,7 @@
 // Admin Dashboard Logic
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -17,7 +18,22 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 const db = getDatabase(app);
+
+// Simple XSS Mitigation to prevent script injection payloads
+function escapeHTML(str) {
+    if (typeof str !== 'string') return str;
+    return str.replace(/[&<>'"]/g, 
+        tag => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            "'": '&#39;',
+            '"': '&quot;'
+        }[tag] || tag)
+    );
+}
 
 const ADMIN_DATA = {
     metrics: [
@@ -47,15 +63,18 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Metrics
     const metricsContainer = document.getElementById('metrics-container');
     ADMIN_DATA.metrics.forEach(metric => {
+        const safeName = escapeHTML(metric.name);
+        const safeValue = "<span>" + escapeHTML(metric.value) + "</span>"; // Using simple concatenation for safety
+        
         metricsContainer.innerHTML += `
             <div class="metric-row">
                 <div class="metric-info">
                     <div class="metric-icon">
                         <i data-lucide="${metric.icon}" class="${metric.color}"></i>
                     </div>
-                    <span class="metric-name">${metric.name}</span>
+                    <span class="metric-name">${safeName}</span>
                 </div>
-                <span class="metric-num">${metric.value}</span>
+                <span class="metric-num">${escapeHTML(metric.value)}</span>
             </div>
         `;
     });
@@ -66,13 +85,17 @@ document.addEventListener('DOMContentLoaded', () => {
         let sc = '';
         if (inc.severity === 'critical') sc = 'critical';
 
+        const safeTitle = escapeHTML(inc.title);
+        const safeTime = escapeHTML(inc.time);
+        const safeDesc = escapeHTML(inc.desc);
+
         incidentsContainer.innerHTML += `
             <div class="incident-card ${sc}">
                 <div class="inc-header">
-                    <span class="inc-title">${inc.title}</span>
-                    <span class="inc-time">${inc.time}</span>
+                    <span class="inc-title">${safeTitle}</span>
+                    <span class="inc-time">${safeTime}</span>
                 </div>
-                <p class="inc-desc">${inc.desc}</p>
+                <p class="inc-desc">${safeDesc}</p>
             </div>
         `;
     });

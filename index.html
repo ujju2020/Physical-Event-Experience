@@ -7,6 +7,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.firebaseio.com https://*.firebaseapp.com https://placehold.co https://ui-avatars.com wss://*.firebaseio.com data:;">
+    <meta name="description" content="A real-time dual-interface PWA designed to optimize large-scale physical events with dynamic density heat-maps.">
     <title>Smart Venue Hub | Attendee App</title>
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json">
@@ -30,11 +32,11 @@
                     <p class="location-status"><i data-lucide="map-pin"></i> Gate C, Section 114</p>
                 </div>
                 <div class="header-actions">
-                    <button class="icon-btn search-btn" aria-label="Search">
-                        <i data-lucide="search"></i>
+                    <button class="icon-btn search-btn" aria-label="Perform global search" tabindex="0">
+                        <i data-lucide="search" aria-hidden="true"></i>
                     </button>
-                    <button class="icon-btn profile-btn" aria-label="Profile">
-                        <img src="https://ui-avatars.com/api/?name=Ujjwal&background=8b5cf6&color=fff&rounded=true" alt="User Profile">
+                    <button class="icon-btn profile-btn" aria-label="Open user profile settings" tabindex="0">
+                        <img src="https://ui-avatars.com/api/?name=Ujjwal&background=8b5cf6&color=fff&rounded=true" alt="Ujjwal's User Profile">
                     </button>
                 </div>
             </div>
@@ -60,29 +62,29 @@
         </header>
 
         <!-- MAIN CONTENT AREA -->
-        <main class="app-main" id="main-content">
+        <main class="app-main" id="main-content" role="main" aria-label="Main Application Content">
             <!-- Content will be injected here by app.js based on active tab -->
         </main>
 
         <!-- BOTTOM NAVIGATION -->
-        <nav class="bottom-nav glass-nav">
-            <button class="nav-item active" data-tab="map" aria-label="Map View">
-                <i data-lucide="map"></i>
+        <nav class="bottom-nav glass-nav" role="tablist" aria-label="Bottom App Navigation">
+            <button class="nav-item active" data-tab="map" aria-label="Map View Tab" role="tab" aria-selected="true" tabindex="0">
+                <i data-lucide="map" aria-hidden="true"></i>
                 <span>Map</span>
             </button>
-            <button class="nav-item" data-tab="food" aria-label="Food & Drinks">
-                <i data-lucide="shopping-bag"></i>
+            <button class="nav-item" data-tab="food" aria-label="Food & Drinks Tab" role="tab" aria-selected="false" tabindex="-1">
+                <i data-lucide="shopping-bag" aria-hidden="true"></i>
                 <span>Order</span>
             </button>
-            <button class="nav-item" data-tab="alerts" aria-label="Alerts">
+            <button class="nav-item" data-tab="alerts" aria-label="Alerts Tab" role="tab" aria-selected="false" tabindex="-1">
                 <div class="icon-wrapper">
-                    <i data-lucide="bell"></i>
-                    <span class="notification-badge">3</span>
+                    <i data-lucide="bell" aria-hidden="true"></i>
+                    <span class="notification-badge" aria-label="3 Unread Alerts">3</span>
                 </div>
                 <span>Alerts</span>
             </button>
-            <button class="nav-item" data-tab="schedule" aria-label="Schedule">
-                <i data-lucide="calendar"></i>
+            <button class="nav-item" data-tab="schedule" aria-label="Event Schedule Tab" role="tab" aria-selected="false" tabindex="-1">
+                <i data-lucide="calendar" aria-hidden="true"></i>
                 <span>Event</span>
             </button>
         </nav>
