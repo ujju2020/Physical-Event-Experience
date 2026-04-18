@@ -46,6 +46,22 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+/* Premium Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+::-webkit-scrollbar-thumb {
+    background: var(--bg-surface-elevated);
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
 body {
     background-color: #000; /* Outer background to frame the app on desktop */
     color: var(--text-primary);
@@ -81,6 +97,42 @@ body {
     -webkit-backdrop-filter: var(--glass-blur);
     border: 1px solid var(--glass-border);
     border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Premium Glare Reveal */
+.glass-panel::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -150%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.05),
+        transparent
+    );
+    transform: rotate(45deg);
+    transition: 0.6s;
+    pointer-events: none;
+}
+
+.glass-panel:hover::after {
+    left: 100%;
+}
+
+.vendor-card:hover {
+    transform: translateY(-4px) scale(1.02);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+}
+
+.icon-btn:active, .nav-item:active, .chip:active, .category-btn:active, .order-btn:active {
+    transform: scale(0.92);
 }
 
 /* Typography Utilities */
