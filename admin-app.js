@@ -71,35 +71,37 @@ function initIcons() {
     } catch (e) { }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
 
-    // ── Firebase Auth: Anonymous Sign-In ─────────────────────────────────────────
-    // Establishes a verified Firebase session for the admin operator.
-    // The UID is attached to analytics for auditing admin activity.
-    try {
-        const userCredential = await signInAnonymously(auth);
-        logEvent(analytics, 'admin_session_start', {
-            app_name: 'SmartVenueHub_Admin',
-            user_id: userCredential.user.uid
-        });
-    } catch (e) {
-        logEvent(analytics, 'admin_session_start', { app_name: 'SmartVenueHub_Admin' });
-    }
-
-    // ── Firebase Remote Config: Fetch live venue configuration ───────────────────
-    // Dynamically controls venue capacity and density thresholds from the cloud.
-    try {
-        await fetchAndActivate(remoteConfig);
-        const capacity = getValue(remoteConfig, 'venue_capacity').asNumber();
-        const threshold = getValue(remoteConfig, 'crowd_density_threshold').asNumber();
-        const metricSpan = document.querySelector('.metric-pill span');
-        if (metricSpan && capacity > 0) {
-            metricSpan.innerHTML = `Total Est. Attendance: <strong>42,150</strong> / ${capacity.toLocaleString()} <em style="opacity:0.6;font-size:0.85em">(${threshold}% alert threshold)</em>`;
+    // ── Non-blocking Firebase Initialization ─────────────────────────────────────
+    const initFirebaseServices = async () => {
+        // ── Firebase Auth: Anonymous Sign-In ─────────────────────────────────────
+        try {
+            const userCredential = await signInAnonymously(auth);
+            logEvent(analytics, 'admin_session_start', {
+                app_name: 'SmartVenueHub_Admin',
+                user_id: userCredential.user.uid
+            });
+        } catch (e) {
+            logEvent(analytics, 'admin_session_start', { app_name: 'SmartVenueHub_Admin' });
         }
-    } catch (e) {
-        console.warn('[Remote Config] Fetch failed, using defaults.', e.message);
-    }
+
+        // ── Firebase Remote Config: Fetch live venue configuration ───────────────
+        try {
+            await fetchAndActivate(remoteConfig);
+            const capacity = getValue(remoteConfig, 'venue_capacity').asNumber();
+            const threshold = getValue(remoteConfig, 'crowd_density_threshold').asNumber();
+            const metricSpan = document.querySelector('.metric-pill span');
+            if (metricSpan && capacity > 0) {
+                metricSpan.innerHTML = `Total Est. Attendance: <strong>42,150</strong> / ${capacity.toLocaleString()} <em style="opacity:0.6;font-size:0.85em">(${threshold}% alert threshold)</em>`;
+            }
+        } catch (e) {
+            console.warn('[Remote Config] Fetch failed, using defaults.', e.message);
+        }
+    };
+
+    initFirebaseServices();
 
     // Render Metrics
     const metricsContainer = document.getElementById('metrics-container');
@@ -262,20 +264,30 @@ window.showBroadcastSuccess = async function () {
     };
 
     // 2. Save to Firebase Realtime Database with Performance trace
-    const broadcastTrace = trace(perf, 'broadcast_dispatch');
-    broadcastTrace.start();
+    let broadcastTrace = null;
+    try {
+        if (typeof trace === 'function' && perf) {
+            broadcastTrace = trace(perf, 'broadcast_dispatch');
+            broadcastTrace.start();
+        }
+    } catch (e) {}
+
     try {
         const alertsRef = ref(db, 'venue_alerts');
         const newAlertRef = push(alertsRef);
         await set(newAlertRef, newAlert);
-        broadcastTrace.putAttribute('status', 'success');
-        broadcastTrace.putAttribute('alert_type', newAlert.type);
+        if (broadcastTrace) {
+            broadcastTrace.putAttribute('status', 'success');
+            broadcastTrace.putAttribute('alert_type', newAlert.type);
+        }
         logEvent(analytics, 'broadcast_dispatched', { alert_title: newAlert.title, alert_type: newAlert.type });
     } catch (e) {
-        broadcastTrace.putAttribute('status', 'error');
+        if (broadcastTrace) broadcastTrace.putAttribute('status', 'error');
         console.error('Firebase push failed. Check Database Rules.', e);
     } finally {
-        broadcastTrace.stop();
+        if (broadcastTrace) {
+            try { broadcastTrace.stop(); } catch (e) {}
+        }
     }
 
     // 3. Show Success Toast locally
