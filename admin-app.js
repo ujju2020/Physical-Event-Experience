@@ -6,6 +6,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+import { getPerformance, trace } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-performance.js";
+import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-remote-config.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -20,6 +23,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
+const auth = getAuth(app);
+const perf = getPerformance(app);
+const remoteConfig = getRemoteConfig(app);
+
+// Remote Config: safe defaults before cloud fetch
+remoteConfig.defaultConfig = {
+    venue_name: "Smart Venue Hub",
+    venue_capacity: 45000,
+    crowd_density_threshold: 85
+};
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour cache
 
 // Simple XSS Mitigation to prevent script injection payloads
 function escapeHTML(str) {
@@ -57,11 +71,35 @@ function initIcons() {
     } catch (e) { }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     lucide.createIcons();
 
-    // Track admin session start
-    logEvent(analytics, 'admin_session_start', { app_name: 'SmartVenueHub_Admin' });
+    // ── Firebase Auth: Anonymous Sign-In ─────────────────────────────────────────
+    // Establishes a verified Firebase session for the admin operator.
+    // The UID is attached to analytics for auditing admin activity.
+    try {
+        const userCredential = await signInAnonymously(auth);
+        logEvent(analytics, 'admin_session_start', {
+            app_name: 'SmartVenueHub_Admin',
+            user_id: userCredential.user.uid
+        });
+    } catch (e) {
+        logEvent(analytics, 'admin_session_start', { app_name: 'SmartVenueHub_Admin' });
+    }
+
+    // ── Firebase Remote Config: Fetch live venue configuration ───────────────────
+    // Dynamically controls venue capacity and density thresholds from the cloud.
+    try {
+        await fetchAndActivate(remoteConfig);
+        const capacity = getValue(remoteConfig, 'venue_capacity').asNumber();
+        const threshold = getValue(remoteConfig, 'crowd_density_threshold').asNumber();
+        const metricSpan = document.querySelector('.metric-pill span');
+        if (metricSpan && capacity > 0) {
+            metricSpan.innerHTML = `Total Est. Attendance: <strong>42,150</strong> / ${capacity.toLocaleString()} <em style="opacity:0.6;font-size:0.85em">(${threshold}% alert threshold)</em>`;
+        }
+    } catch (e) {
+        console.warn('[Remote Config] Fetch failed, using defaults.', e.message);
+    }
 
     // Render Metrics
     const metricsContainer = document.getElementById('metrics-container');
@@ -223,14 +261,21 @@ window.showBroadcastSuccess = async function () {
         unread: true
     };
 
-    // 2. Save to Firebase Realtime Database & track analytics
+    // 2. Save to Firebase Realtime Database with Performance trace
+    const broadcastTrace = trace(perf, 'broadcast_dispatch');
+    broadcastTrace.start();
     try {
         const alertsRef = ref(db, 'venue_alerts');
         const newAlertRef = push(alertsRef);
         await set(newAlertRef, newAlert);
+        broadcastTrace.putAttribute('status', 'success');
+        broadcastTrace.putAttribute('alert_type', newAlert.type);
         logEvent(analytics, 'broadcast_dispatched', { alert_title: newAlert.title, alert_type: newAlert.type });
     } catch (e) {
+        broadcastTrace.putAttribute('status', 'error');
         console.error('Firebase push failed. Check Database Rules.', e);
+    } finally {
+        broadcastTrace.stop();
     }
 
     // 3. Show Success Toast locally

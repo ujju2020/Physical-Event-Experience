@@ -6,6 +6,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-database.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-analytics.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-auth.js";
+import { getPerformance, trace } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-performance.js";
+import { getRemoteConfig, fetchAndActivate, getValue } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-remote-config.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBrtwJM1x92S98RNudD_KYjmP__I_oyaVI",
@@ -20,6 +23,18 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const db = getDatabase(app);
+const auth = getAuth(app);
+const perf = getPerformance(app);
+const remoteConfig = getRemoteConfig(app);
+
+// Remote Config: define safe defaults used before the first cloud fetch completes
+remoteConfig.defaultConfig = {
+    venue_name: "Smart Venue Hub",
+    critical_wait_threshold: 20,
+    long_wait_threshold: 10,
+    alert_badge_max: 99
+};
+remoteConfig.settings.minimumFetchIntervalMillis = 3600000; // 1 hour cache
 
 // Simple XSS Mitigation to prevent script injection payloads
 function escapeHTML(str) {
@@ -61,9 +76,34 @@ function initIcons() {
 }
 
 // Initialize app when DOM loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Track app open event
-    logEvent(analytics, 'app_open', { app_name: 'SmartVenueHub_Attendee' });
+document.addEventListener('DOMContentLoaded', async () => {
+
+    // ── Firebase Auth: Anonymous Sign-In ─────────────────────────────────────────
+    // Establishes a verified Firebase session for this attendee device.
+    // The UID is attached to the app_open analytics event for session tracking.
+    try {
+        const userCredential = await signInAnonymously(auth);
+        logEvent(analytics, 'app_open', {
+            app_name: 'SmartVenueHub_Attendee',
+            user_id: userCredential.user.uid
+        });
+    } catch (e) {
+        // Auth unavailable (offline/CSP) — log without UID
+        logEvent(analytics, 'app_open', { app_name: 'SmartVenueHub_Attendee' });
+    }
+
+    // ── Firebase Remote Config: Fetch live venue configuration ───────────────────
+    // Pulls cloud-controlled values (venue name, thresholds) without a code deploy.
+    try {
+        await fetchAndActivate(remoteConfig);
+        const venueName = getValue(remoteConfig, 'venue_name').asString();
+        const locationEl = document.querySelector('.location-status');
+        if (locationEl && venueName) {
+            locationEl.innerHTML = `<i data-lucide="map-pin"></i> ${venueName} · Gate C, Section 114`;
+        }
+    } catch (e) {
+        console.warn('[Remote Config] Fetch failed, using defaults.', e.message);
+    }
 
     // Initialize Lucide icons
     initIcons();
@@ -285,6 +325,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
+        // ── Firebase Performance: trace how long each tab takes to render ──────
+        const renderTrace = trace(perf, `tab_render_${tabId}`);
+        renderTrace.start();
+
         // Render content
         switch (tabId) {
             case 'map': renderMapTab(); break;
@@ -292,6 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
             case 'alerts': renderAlertsTab(); break;
             default: renderEmptyTab(tabId.charAt(0).toUpperCase() + tabId.slice(1));
         }
+
+        renderTrace.stop();
     };
 
     // Attach click listeners to nav buttons

@@ -11,12 +11,16 @@ The Smart Venue Experience Hub is a completed, production-grade prototype engine
 -   **The Attendee App (`index.html`):** A mobile-first, dark-themed, glassmorphic Progressive Web App (PWA) that allows users to seamlessly navigate between an interactive stadium heatmap, a live concessions wait-time search interface, and a real-time admin-push alert feed. Includes an auto-dismissing in-app toast notification when a new admin alert is received.
 -   **The Admin Dashboard (`admin.html`):** A data-dense, desktop-first "Bento Grid" command center for stadium operators to view active incidents, monitor zone-level crowd density, toggle floor-level heatmap views, and push global alerts to all attendees. Fully responsive — collapses to a mobile-scrollable tab navigation on smaller displays.
 
-### 2. Real-Time Cloud Synchronization (Google Firebase)
--   Integrated the **Google Firebase Realtime Database (v12 SDK)** for cross-device broadcast routing via WebSockets (`onValue`, `push`, `set`).
--   Integrated **Google Firebase Analytics** with `logEvent()` tracking across 9 distinct user interaction events:
-    - `app_open`, `tab_view`, `map_filter_applied`, `vendor_searched`, `mark_all_read` — Attendee App
-    - `admin_session_start`, `module_navigated`, `map_level_toggled`, `broadcast_dispatched` — Admin Dashboard
--   Alerts typed into the Admin Dashboard are pushed to Firebase and instantly received by any connected attendee device — demonstrating a multi-service Google Cloud architecture.
+### 2. Real-Time Cloud Architecture — 5 Google Firebase Services
+-   **Firebase Realtime Database (v12 SDK):** Cross-device broadcast routing via WebSockets (`onValue`, `push`, `set`). Alerts dispatched from the Admin Dashboard instantly appear on all connected Attendee devices.
+-   **Firebase Analytics:** `logEvent()` tracking across 9 distinct user interaction events (split across both apps). Auth UID is attached to `app_open` and `admin_session_start` for session-level attribution.
+-   **Firebase Authentication (Anonymous Sign-In):** Both apps call `signInAnonymously(auth)` on load. This establishes a verified Firebase session — the returned UID is passed to Analytics events, enabling proper session tracking across the user journey.
+-   **Firebase Performance Monitoring:** Custom performance traces instrument key operations:
+    -   `tab_render_<tabId>` — measures how long each tab takes to render in the Attendee App (starts before the `switch()`, stops after).
+    -   `broadcast_dispatch` — wraps the entire Admin Firebase write (`push` + `set`) with `putAttribute('status', 'success'|'error')` for operational monitoring.
+-   **Firebase Remote Config:** Both apps call `fetchAndActivate(remoteConfig)` on load with safe local defaults. Fetched values dynamically update the UI without a code deploy:
+    -   Attendee App: `venue_name` updates the location label in the header.
+    -   Admin Dashboard: `venue_capacity` and `crowd_density_threshold` update the attendance pill.
 
 ### 3. Security Hardening
 -   Added a strict **Content Security Policy (CSP)** `<meta>` tag to both HTML files — explicitly whitelisting Firebase, Google Fonts, and CDN origins to prevent Cross-Site Scripting (XSS) attacks.
@@ -72,7 +76,7 @@ The Smart Venue Experience Hub is a completed, production-grade prototype engine
 | **Efficiency** | Lightweight Vanilla JS, zero build step, hardware-accelerated CSS animations |
 | **Testing** | 30 unit tests via Node.js native runner — 100% pass rate, covers edge cases & integration logic |
 | **Accessibility** | WCAG-aligned roles, aria-labels, aria-selected, tabindex, alt text throughout |
-| **Google Services** | Firebase Realtime Database (WebSocket sync) + Firebase Analytics (9 tracked events) |
+| **Google Services** | 5 Firebase services: Realtime DB (WebSocket sync), Analytics (9 events + UID attribution), Anonymous Auth (session establishment), Performance Monitoring (custom traces), Remote Config (cloud-controlled UI values) |
 | **Problem Alignment** | Physical Event Experience vertical solving real bottlenecks at large-scale venues |
 
 ---

@@ -38,9 +38,15 @@ Both applications are hosted on the public internet via **GitHub Pages** — no 
 
 ## ⚡ Cloud Infrastructure
 
-This application uses a fully serverless, real-time cloud architecture powered by multiple **Google Firebase** services:
-- **Firebase Realtime Database:** When an admin dispatches an alert, it is pushed to the cloud database in real-time via `push()` + `set()`. The Attendee app maintains a persistent WebSocket `onValue()` listener that binds the incoming payload to the screen in milliseconds, sliding down a custom notification toast.
-- **Firebase Analytics:** User engagement events are tracked across both apps via `logEvent()` to understand attendee behaviour patterns.
+This application uses a fully serverless, real-time cloud architecture powered by **5 distinct Google Firebase services**:
+
+| Service | Usage |
+|---|---|
+| **Firebase Realtime Database** | Cross-device broadcast routing via WebSockets (`onValue`, `push`, `set`) |
+| **Firebase Analytics** | `logEvent()` tracking across 9 user interaction events on both apps |
+| **Firebase Authentication** | Anonymous sign-in on load — establishes a verified session UID attached to analytics events |
+| **Firebase Performance Monitoring** | Custom traces: `tab_render_<tabId>` on every tab switch; `broadcast_dispatch` wrapping the admin's Firebase write with `putAttribute` metadata |
+| **Firebase Remote Config** | Cloud-controlled config (`venue_name`, `critical_wait_threshold`, `venue_capacity`, `crowd_density_threshold`) with safe local defaults — updates UI without a code deploy |
 
 ### Firebase Analytics Events Tracked
 
@@ -93,7 +99,7 @@ Test file: `tests/app.test.js`
 
 - **HTML5 & Vanilla JS ES Modules:** No complex compilation steps or build tools required.
 - **CSS3:** Premium deep-space aesthetic, glassmorphism UI components, and hardware-accelerated CSS animations.
-- **Firebase v12 JS SDK:** Realtime Database (cross-device synchronization) + Analytics (event tracking).
+- **Firebase v12 JS SDK:** 5 services — Realtime Database, Analytics, Authentication, Performance Monitoring, Remote Config.
 - **Lucide Icons:** SVG icon library loaded via CDN for sharp, scalable iconography.
 - **Service Workers:** PWA offline-caching support for stadium Wi-Fi resilience.
 - **GitHub Pages:** Free, public, zero-config static deployment.
@@ -101,8 +107,8 @@ Test file: `tests/app.test.js`
 ## 🔮 Next Steps (Roadmap)
 
 To elevate this prototype to a full production system:
+- Integrate **Firebase Authentication** with email/password or Google Sign-In to replace anonymous auth and secure the Admin Dashboard behind a real login screen.
 - Implement hardware API bindings to pull live turnstile or heat-sensor data onto the map instead of randomized mock data.
-- Integrate **Firebase Authentication** to secure the Admin Dashboard behind an admin-only login screen.
 - Add end-to-end integration tests simulating the full Admin → Firebase → Attendee broadcast flow.
 - Add a favicon asset to resolve the minor 404 on load.
 
